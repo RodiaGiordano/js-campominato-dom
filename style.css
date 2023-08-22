@@ -1,0 +1,46 @@
+.container{
+    min-height: 500px;
+    background-color: aquamarine;
+    padding: 50px 0;
+    
+}
+
+#wrapper{
+    width: 80%;
+    border: 1px solid black;
+    flex-wrap: wrap;
+    margin: 0 auto;
+        
+}
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px
+}
+
+.box.easy{
+    width: calc(100% / 10);
+}
+
+.box.medium{
+    width: calc(100% / 9);
+}
+
+.box.hard{
+    width: calc(100% / 7);
+}
+
+
+.box{
+    aspect-ratio: 1;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-weight: bold;
+    border: 1px solid black;
+}
