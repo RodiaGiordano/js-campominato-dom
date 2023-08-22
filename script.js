@@ -1,7 +1,3 @@
-// L'utente clicca su un bottone che genererà una griglia di gioco quadrata.
-// Ogni cella ha un numero progressivo, da 1 a 100.
-// Ci saranno quindi 10 caselle per ognuna delle 10 righe.
-// Quando l'utente clicca su ogni cella, la cella cliccata si colora di azzurro ed emetto un messaggio in console con il numero della cella cliccata.
 
 
 const cellContainer = document.getElementById("wrapper");
@@ -12,7 +8,9 @@ const difficulty = document.getElementById('difficulty')
 
 
 buttonGrid.addEventListener('click', function(){ 
-    
+
+    const playerScore = []; // tiene il conto delle celle buone cliccate
+
     cellContainer.innerHTML = ""; // pulisco la griglia
     
     let classEl; // variabile d'appoggio per le classi
@@ -24,15 +22,13 @@ buttonGrid.addEventListener('click', function(){
     if(!max) alert('seleziona una difficoltà')   // controllo che abbia selezionato una difficoltà
 
 
+   
+    const whitelistCell = generateProgressiveArray (1, max, 1); // creo una White List 
     
-    const whitelistCell = generateProgressiveArray (1, max, 1); // creo una whitelist 
-    console.log(whitelistCell)
-
-
 
     const listBomb = []; // creo un array in cui aggiungero i numeri bomba
     
-    for(let i = 0; i < bombNumber; i++){
+    for(let i = 0; i < bombNumber; i++){ // seleziona randomicamente da whitelist e pusha in balck (tiene conto della lunghezza progressivamente minore della whitelist)
         
         const bombEl = randomNumber(0, ((max -1) - listBomb.length), true);
 
@@ -44,23 +40,25 @@ buttonGrid.addEventListener('click', function(){
     
 
     
-    console.log(listBomb)
-
-
     // istruzioni condizionali per settare classEl
     if(max == 100) classEl = 'box easy' 
     if(max == 81) classEl = 'box medium'
     if(max == 49) classEl = 'box hard'
 
+   
  
     for(let i = 1; i <= max; i++){
        
-        const cell = generatedGrid(cellContainer, 'div', classEl, i, listBomb) // creo gli elementi ed inserisco gli attributi
+    const cell = generatedGrid(cellContainer, 'div', classEl, i, listBomb) // creo gli elementi
+    const cellShow = generatedCell(cell, i, listBomb, whitelistCell, playerScore) // inserisco gli attributi
+
+    
     }
+    
+    
+   
+    
 })
-        
-       
-        
 
 
 
@@ -74,19 +72,18 @@ buttonGrid.addEventListener('click', function(){
  *  */
 
 
-function generatedGrid (container, object, classEl, counter, whitelist){
-
-
-    
-    let cell = document.createElement(object);    
+function generatedGrid (container, object, classEl){
+       
+    const cell = document.createElement(object);    
     
     cell.className = classEl
     
-    generatedCell (cell, counter, whitelist)
+    // const result = generatedCell (cell, counter, whitelist)
     
-    container.append(cell);
+    container.append(cell); // inserisco l'elemento nel container
+
+    return cell; // lo ritorno per l'altra funzione
     
-    return cell;
 }
 
 
@@ -98,31 +95,74 @@ function generatedGrid (container, object, classEl, counter, whitelist){
  * 
  *  */
 
-function generatedCell (object, counter, whitelist) {
+function generatedCell (object, counter, listBomb, whitelist, playerScore) {
+    // let selected;
     
+    object.setAttribute('id', 'unSelected') // setto un id per tutti gli object
+    let lose; // variabile di appoggio per il true/false
 
-    object.setAttribute('data-index', counter);
+    
+    
+    object.addEventListener('click', function (){
+        lose = object.getAttribute('id')         
         
-    let cellShow = parseInt(object.getAttribute('data-index'))
-        
-    object.addEventListener('click', function(){
-        
-        if(whitelist.includes(counter)){
-            this.classList.add('bg-danger')
-            this.innerHTML = '<i class="fa-solid fa-bomb fa-2xl"></i>'
-        }
+        if(lose){ //se lose true setto l'object con gli attributi 
+            object.setAttribute('data-index', counter); 
+            
+            let cellShow = parseInt(object.getAttribute('data-index'))
+            
+            
+            const selectedCell = cellShow;
+            
+            const pointScore = playerScore.length
+            
+            if(listBomb.includes(counter)){ //se la lista delle bombe contiene l'elemento selezionato
 
-        else{
-            this.classList.add('bg-primary');
-            this.innerText = cellShow;
-        }
+                this.classList.add('bg-danger')
+                this.innerHTML = '<i class="fa-solid fa-bomb fa-2xl"></i>'     
+                                
+                alert('hai perso! hai totalizzato: ' + pointScore + ' punti!') // restituisco il punteggio (0)
+
+                const lose = document.querySelectorAll('#unSelected') //prendo tutti gli object con id unSelector
                 
-        })
-}
 
+                for(i = 0; i < lose.length; i++){ // prendo tutti gli object creati ed elimino l'id
 
+                    lose[i].removeAttribute('id')
 
-/**
+                }
+                return // interrompo la funzione se si verifica una bomba
+            }
+
+                
+            
+            
+            this.classList.add('bg-primary'); // setto la classe per la cella numerica
+            this.innerText = cellShow; // aggiungo il numero progressivo all'inner
+            
+            playerScore.push(this.innerHTML) // inserisco l'elemento nell'array playerScore
+            
+            
+            object.removeAttribute('id') // rimuovo l'id di questo elemento
+            
+            if(playerScore.length == whitelist.length){ // se clicca tutte quelle disponibili buone
+                
+                alert('hai vinto! hai totalizzato: ' + pointScore + ' punti!')} //vittoria max punteggio == whitelist.length (100, 81, 49)
+                
+                               
+            }
+        }
+        )}
+    
+        
+            
+           
+        
+    
+    
+    
+    
+    /**
  * Genera una whitelist
  * @param {int} from da dove inizia a contare
  * @param {int} to fino a dove contare
