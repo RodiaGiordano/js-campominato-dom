@@ -32,6 +32,10 @@
     width: calc(100% / 7);
 }
 
+.box.bomb{
+    background-color: red;
+
+}
 
 .box{
     aspect-ratio: 1;
