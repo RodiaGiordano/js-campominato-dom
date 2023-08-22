@@ -26,22 +26,25 @@ buttonGrid.addEventListener('click', function(){
 
     
     const whitelistCell = generateProgressiveArray (1, max, 1); // creo una whitelist 
-    console.log("whitelistCell: " + whitelistCell)
+    console.log(whitelistCell)
+
+
 
     const listBomb = []; // creo un array in cui aggiungero i numeri bomba
-
+    
     for(let i = 0; i < bombNumber; i++){
- 
-        const bombEl = whitelistCell.splice((randomNumber(0, (max - listBomb.length), false)), 1); // la bomba è uguale all'elemento rimosso casualmente dalla whitelist, il numero da cui lo splice inizia a contare si adatta alla lunghezza della whitelist
-
-        console.log("genero numero casuale: " + bombEl)
-        console.log("numero tolto: " + bombEl)
         
-        listBomb.unshift(bombEl); //aggiungo alla lista bombe l'elemento rimosso dalal whitelist
-    }
-   
-    console.log("lista bombe: " + listBomb)
+        const bombEl = randomNumber(0, ((max -1) - listBomb.length), true);
 
+        listBomb.push(whitelistCell[bombEl]);
+
+        whitelistCell.splice(bombEl, 1);
+        
+    }
+    
+
+    
+    console.log(listBomb)
 
 
     // istruzioni condizionali per settare classEl
@@ -49,16 +52,15 @@ buttonGrid.addEventListener('click', function(){
     if(max == 81) classEl = 'box medium'
     if(max == 49) classEl = 'box hard'
 
-    
+ 
     for(let i = 1; i <= max; i++){
-        
+       
         const cell = generatedGrid(cellContainer, 'div', classEl, i, listBomb) // creo gli elementi ed inserisco gli attributi
     }
 })
         
        
         
-    
 
 
 
@@ -73,13 +75,15 @@ buttonGrid.addEventListener('click', function(){
 
 
 function generatedGrid (container, object, classEl, counter, whitelist){
+
+
     
     let cell = document.createElement(object);    
     
     cell.className = classEl
-       
+    
     generatedCell (cell, counter, whitelist)
-
+    
     container.append(cell);
     
     return cell;
@@ -95,20 +99,24 @@ function generatedGrid (container, object, classEl, counter, whitelist){
  *  */
 
 function generatedCell (object, counter, whitelist) {
+    
 
     object.setAttribute('data-index', counter);
         
-        
-    let cellShow = object.getAttribute('data-index')
+    let cellShow = parseInt(object.getAttribute('data-index'))
         
     object.addEventListener('click', function(){
+        
         if(whitelist.includes(counter)){
             this.classList.add('bg-danger')
+            this.innerHTML = '<i class="fa-solid fa-bomb fa-2xl"></i>'
         }
+
+        else{
             this.classList.add('bg-primary');
-            
             this.innerText = cellShow;
-            
+        }
+                
         })
 }
 
@@ -126,7 +134,7 @@ function generateProgressiveArray (from, to, step){
     const whitelist  = [];
  
     for(let i = from; i <= to; i += step){
-       whitelist.unshift(i);
+       whitelist.push(i);
     }
  
     return whitelist;
